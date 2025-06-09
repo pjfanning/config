@@ -62,7 +62,7 @@ final class BadMap<K,V> {
             rehash(entries, newEntries);
         }
 
-        int hash = Math.abs(k.hashCode());
+        int hash = positiveInt(k.hashCode());
         store(newEntries, hash, k, v);
         return new BadMap<>(newSize, newEntries);
     }
@@ -95,12 +95,17 @@ final class BadMap<K,V> {
         }
     }
 
+    // Math.abs does not return a positive int for Integer.MIN_VALUE so positiveInt(i) returns Integer.MAX_VALUE instead
+    private static int positiveInt(int i) {
+        return i == Integer.MIN_VALUE ? Integer.MAX_VALUE : Math.abs(i);
+    }
+
     @SuppressWarnings("unchecked")
     V get(K k) {
         if (entries.length == 0) {
             return null;
         } else {
-            int hash = Math.abs(k.hashCode());
+            int hash = positiveInt(k.hashCode());
             int i = hash % entries.length;
             Entry e = entries[i];
             if (e == null)
